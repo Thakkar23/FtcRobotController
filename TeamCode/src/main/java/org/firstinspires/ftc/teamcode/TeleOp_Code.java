@@ -10,6 +10,7 @@ public class TeleOp_Code extends LinearOpMode
 
     public DcMotor A;
     public DcMotor B;
+    //public DcMotor Intake;
     public DcMotor Shooter1;
     public DcMotor Shooter2;
 
@@ -83,8 +84,12 @@ public class TeleOp_Code extends LinearOpMode
 
     }
     private void Shootera(double power) {
-        Shooter1.setPower(power); Shooter2.setPower(power);
+        Shooter1.setPower(-power); Shooter2.setPower(power);
     }
+
+    //private void Intake(double power) {
+        //Intake.setPower(power);
+    //}
 
 
 
@@ -94,14 +99,16 @@ public class TeleOp_Code extends LinearOpMode
         //A=hardwareMap.dcMotor.get("A");
         //B=hardwareMap.dcMotor.get("B");
         Shooter1=hardwareMap.dcMotor.get("Shooter1");
-        Shooter2=hardwareMap.dcMotor.get("Shooter1");
+        Shooter2=hardwareMap.dcMotor.get("Shooter2");
+        //Intake=hardwareMap.dcMotor.get("Intake");
 
         waitForStart();
         while(opModeIsActive())
         {
             //GamePad_1();
             Shootera(gamepad1.right_trigger);
-            //telemetry.addData("Value",Shooter1.getPortNumber());
+            //Intake(gamepad1.left_trigger);
+            //telemetry.addData("Value",Shooter1.getPortNumber());e
             //telemetry.addData("number", gamepad1.left_bumper);
             //telemetry.addData("number", gamepad1.a);
             //telemetry.update();
