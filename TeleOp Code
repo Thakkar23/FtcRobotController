@@ -1,0 +1,100 @@
+package org.firstinspires.ftc.teamcode;
+
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.util.Range;
+
+@TeleOp(name = "TeleOp", group = "LinearOpMode")
+public class TeleOp_Code extends LinearOpMode implements Runnable
+{
+
+    public DcMotor FrontLeft;
+    public DcMotor FrontRight;
+    public DcMotor BackLeft;
+    public DcMotor BackRight;
+    public DcMotor Lift ;
+    public Servo wobbleArm;
+    public DcMotor Intake;
+    public DcMotorEx Shooter1;
+    public DcMotorEx Shooter2;
+
+    private void setMovement(double lx, double ly, double rx, double power) {
+        FrontLeft.setPower(Range.clip(ly + lx + rx, -power, power));
+        FrontRight.setPower(Range.clip(ly - lx - rx, -power, power));
+        BackLeft.setPower(Range.clip(ly - lx + rx, -power, power));
+        BackRight.setPower(Range.clip(ly + lx - rx, -power, power));
+    }
+
+
+    private void Shooter(double power) {
+        Shooter1.setVelocity(-power); Shooter2.setVelocity(power);
+    }
+
+    private void Intake(double power) {
+        Intake.setPower(-power);
+    }
+    private void LiftUp(boolean power) {
+        Lift.setPower(1);
+    }
+
+    private void LiftDown(boolean power) {
+        Lift.setPower(-1);
+    }
+
+
+
+    @Override
+    public void runOpMode()
+    {
+        Shooter1=hardwareMap.get(DcMotorEx.class,"Shooter1");
+        Shooter2=hardwareMap.get(DcMotorEx.class,"Shooter2");
+        FrontLeft = hardwareMap.dcMotor.get("FrontLeft");
+        FrontRight = hardwareMap.dcMotor.get("FrontRight");
+        BackLeft = hardwareMap.dcMotor.get("BackLeft");
+        BackRight = hardwareMap.dcMotor.get("BackRight");
+        FrontLeft.setDirection(DcMotorSimple.Direction.REVERSE);
+        BackLeft.setDirection(DcMotorSimple.Direction.REVERSE);
+          wobbleArm = hardwareMap.servo.get("WobbleArm");
+          Lift = hardwareMap.dcMotor.get("Lift");
+        Intake=hardwareMap.dcMotor.get("Intake");
+
+        Thread drivetrain = new Thread(this);
+
+
+        waitForStart();
+        drivetrain.start();
+        boolean toggle = false;
+        while(opModeIsActive())
+        {
+
+            Shooter(gamepad1.right_trigger);
+            setMovement(gamepad1.left_stick_x, gamepad1.left_stick_y, gamepad1.right_stick_x, 1);
+            Intake(gamepad1.left_trigger);
+              LiftUp(gamepad1.right_bumper);
+              LiftDown(gamepad1.left_bumper);
+              if (gamepad1.a) {
+                  if (!toggle) {
+                      wobbleArm.setPosition(1);
+                  }else {
+                      wobbleArm.setPosition(0);
+                  }
+                  toggle = !toggle ;
+                  sleep(300);
+              }
+
+        }
+    }
+
+    @Override
+    public void run() {
+        while(opModeIsActive())
+        {
+            setMovement(gamepad1.left_stick_x, gamepad1.left_stick_y, gamepad1.right_stick_x, 1);
+
+        }
+    }
+}
